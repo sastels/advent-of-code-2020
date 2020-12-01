@@ -1,3 +1,5 @@
+use advent_2020::day1;
+
 fn main() {
-    println!("Hello, world!");
+    day1::pr();
 }
