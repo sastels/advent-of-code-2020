@@ -4,37 +4,28 @@ fn parse_data(data: &[String]) -> Vec<i32> {
     data.iter().map(|s| s.parse::<i32>().unwrap()).collect()
 }
 
-pub fn solve_a(data: &[String]) {
+pub fn solve_a(data: &[String]) -> i32 {
     let data = parse_data(data);
     let mut numbers_seen: HashMap<i32, i32> = HashMap::new();
 
     for num in &data {
         match numbers_seen.get(&(2020 - num)) {
-            Some(_) => {
-                println!("Day 1a: {} * {} = {}", num, 2020 - num, num * (2020 - num));
-            }
+            Some(_) => return num * (2020 - num),
             None => {
                 numbers_seen.insert(*num, 1);
             }
         }
     }
+    -1
 }
 
-pub fn solve_b(data: &[String]) {
+pub fn solve_b(data: &[String]) -> i32 {
     let data = parse_data(data);
     let mut sums: HashMap<i32, i32> = HashMap::new();
 
     for num1 in &data {
         match sums.get(&(2020 - num1)) {
-            Some(num2) => {
-                println!(
-                    "Day 1b: {} * {} * {} = {}",
-                    num1,
-                    num2,
-                    2020 - num1 - num2,
-                    num1 * num2 * (2020 - num1 - num2)
-                );
-            }
+            Some(num2) => return num1 * num2 * (2020 - num1 - num2),
             None => {
                 for num2 in &data {
                     if num1 < num2 && num1 + num2 <= 2020 {
@@ -45,4 +36,5 @@ pub fn solve_b(data: &[String]) {
             }
         }
     }
+    -1
 }

@@ -33,14 +33,12 @@ impl Password {
     }
 }
 
-pub fn solve_a(data: &[String]) {
+pub fn solve_a(data: &[String]) -> usize {
     let data: Vec<Password> = data.iter().map(|line| Password::new(line)).collect();
-    let num_passing = data.iter().filter(|p| p.passes_a()).count();
-    println!("Day 2a: {:?}", num_passing);
+    data.iter().filter(|p| p.passes_a()).count()
 }
 
-pub fn solve_b(data: &[String]) {
+pub fn solve_b(data: &[String]) -> usize {
     let data: Vec<Password> = data.iter().map(|line| Password::new(line)).collect();
-    let num_passing = data.iter().filter(|p| p.passes_b()).count();
-    println!("Day 2b: {:?}", num_passing);
+    data.iter().filter(|p| p.passes_b()).count()
 }
