@@ -14,11 +14,11 @@ impl Hill {
         c == '#'
     }
 
-    pub fn slide_down(&self, col_offset: usize) -> usize {
+    pub fn slide_down(&self, row_offset: usize, col_offset: usize) -> usize {
         let mut col = 0;
         let mut num_trees = 0;
 
-        for row in 0..self.data.len() {
+        for row in (0..self.data.len()).step_by(row_offset) {
             if self.tree_at(row, col) {
                 num_trees += 1;
             }
@@ -30,9 +30,14 @@ impl Hill {
 
 pub fn solve_a(data: &[String]) -> usize {
     let hill = Hill::new(Vec::from(data));
-    hill.slide_down(3)
+    hill.slide_down(1, 3)
 }
 
-pub fn solve_b(_data: &[String]) -> usize {
-    0
+pub fn solve_b(data: &[String]) -> usize {
+    let hill = Hill::new(Vec::from(data));
+    hill.slide_down(1, 1)
+        * hill.slide_down(1, 3)
+        * hill.slide_down(1, 5)
+        * hill.slide_down(1, 7)
+        * hill.slide_down(2, 1)
 }
