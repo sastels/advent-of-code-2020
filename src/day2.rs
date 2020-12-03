@@ -33,12 +33,26 @@ impl Password {
     }
 }
 
+pub fn parse_many(line: &str) -> Vec<Password> {
+    let re = Regex::new(r"(\d+)-(\d+) (\w): (\w+)").unwrap();
+    re.captures_iter(line)
+        .map(|cap| Password {
+            min: cap[1].parse::<usize>().unwrap(),
+            max: cap[2].parse::<usize>().unwrap(),
+            letter: cap[3].parse::<char>().unwrap(),
+            password: String::from(&cap[4]),
+        })
+        .collect()
+}
+
 pub fn solve_a(data: &[String]) -> usize {
-    let data: Vec<Password> = data.iter().map(|line| Password::new(line)).collect();
+    let data = data.join(" ");
+    let data = parse_many(&data);
     data.iter().filter(|p| p.passes_a()).count()
 }
 
 pub fn solve_b(data: &[String]) -> usize {
-    let data: Vec<Password> = data.iter().map(|line| Password::new(line)).collect();
+    let data = data.join(" ");
+    let data = parse_many(&data);
     data.iter().filter(|p| p.passes_b()).count()
 }
