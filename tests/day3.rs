@@ -40,3 +40,16 @@ fn test_day3_hill_tree_at_true_wide() {
     assert!(hill.tree_at(0, 13));
     assert!(hill.tree_at(4, 23));
 }
+
+#[test]
+fn test_day3_hill_slide_down() {
+    let data = read_lines("./data/day3_test.txt");
+    let hill = Hill::new(data);
+    assert_eq!(hill.slide_down(3), 7);
+}
+
+#[test]
+fn test_day3_solve_a() {
+    let data = read_lines("./data/day3_test.txt");
+    assert_eq!(day3::solve_a(&data), 7);
+}

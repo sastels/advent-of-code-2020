@@ -8,15 +8,29 @@ impl Hill {
         Hill { data }
     }
 
-    pub fn tree_at(&self, x: usize, y: usize) -> bool {
-        let width = self.data[x].chars().count();
-        let c = self.data[x].chars().nth(y % width).unwrap();
+    pub fn tree_at(&self, row: usize, col: usize) -> bool {
+        let width = self.data[row].chars().count();
+        let c = self.data[row].chars().nth(col % width).unwrap();
         c == '#'
+    }
+
+    pub fn slide_down(&self, col_offset: usize) -> usize {
+        let mut col = 0;
+        let mut num_trees = 0;
+
+        for row in 0..self.data.len() {
+            if self.tree_at(row, col) {
+                num_trees += 1;
+            }
+            col += col_offset;
+        }
+        num_trees
     }
 }
 
-pub fn solve_a(_data: &[String]) -> usize {
-    0
+pub fn solve_a(data: &[String]) -> usize {
+    let hill = Hill::new(Vec::from(data));
+    hill.slide_down(3)
 }
 
 pub fn solve_b(_data: &[String]) -> usize {
