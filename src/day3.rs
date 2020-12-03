@@ -9,7 +9,9 @@ impl Hill {
     }
 
     pub fn tree_at(&self, x: usize, y: usize) -> bool {
-        false
+        let width = self.data[x].chars().count();
+        let c = self.data[x].chars().nth(y % width).unwrap();
+        c == '#'
     }
 }
 

@@ -29,7 +29,7 @@ fn test_day3_hill_tree_at_true() {
 fn test_day3_hill_tree_at_false_wide() {
     let data = read_lines("./data/day3_test.txt");
     let hill = Hill::new(data);
-    assert!(!hill.tree_at(0, 13));
+    assert!(!hill.tree_at(0, 15));
     assert!(!hill.tree_at(2, 30));
 }
 
