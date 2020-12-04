@@ -1,6 +1,5 @@
 use regex::Regex;
 
-#[derive(Debug)]
 pub struct Password {
     pub min: usize,
     pub max: usize,

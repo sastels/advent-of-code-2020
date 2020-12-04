@@ -49,6 +49,14 @@ fn test_day3_hill_slide_down() {
 }
 
 #[test]
+#[ignore]
+fn test_day3_hill_slide_down_zip() {
+    let data = read_lines("./data/day3_test.txt");
+    let hill = Hill::new(data);
+    assert_eq!(hill.slide_down_zip(1, 3), 7);
+}
+
+#[test]
 fn test_day3_solve_a() {
     let data = read_lines("./data/day3_test.txt");
     assert_eq!(day3::solve_a(&data), 7);

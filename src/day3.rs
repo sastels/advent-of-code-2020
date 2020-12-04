@@ -1,4 +1,3 @@
-#[derive(Debug)]
 pub struct Hill {
     pub data: Vec<String>,
 }
@@ -25,6 +24,15 @@ impl Hill {
             col += col_offset;
         }
         num_trees
+    }
+
+    pub fn slide_down_zip(&self, row_offset: usize, col_offset: usize) -> usize {
+        let iter_row = (0..self.data.len()).step_by(row_offset);
+        let iter_col = (0..self.data.len()).step_by(col_offset);
+        iter_row
+            .zip(iter_col)
+            .filter(|(row, col)| self.tree_at(*row, *col))
+            .count()
     }
 }
 
