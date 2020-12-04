@@ -17,7 +17,7 @@ impl Passport {
         Passport { fields }
     }
 
-    pub fn is_valid(&self) -> bool {
+    pub fn all_present(&self) -> bool {
         ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
             .iter()
             .all(|k| self.fields.contains_key(&k.to_string()))
@@ -28,7 +28,7 @@ pub fn solve_a(data: &[String]) -> usize {
     let data = join_lines(&data);
     data.iter()
         .map(|line| Passport::new(line))
-        .filter(|passport| passport.is_valid())
+        .filter(|passport| passport.all_present())
         .count()
 }
 

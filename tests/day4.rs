@@ -12,23 +12,23 @@ fn test_day4_passport_new() {
 }
 
 #[test]
-fn test_day4_passport_valid() {
+fn test_day4_passport_all_present() {
     let s1 = "ecl:gry pid:860033327 eyr:2020 hcl:#fffffd byr:1937 iyr:2017 cid:147 hgt:183cm";
     let s2 = "ecl:gry pid:860033327 eyr:2020 hcl:#fffffd byr:1937 iyr:2017 hgt:183cm";
     let s3 = "ecl:gry pid:860033327 eyr:2020 hcl:#fffffd byr:1937 iyr:2017 hgt:183cm sja:hi";
-    assert!(Passport::new(s1).is_valid());
-    assert!(Passport::new(s2).is_valid());
-    assert!(Passport::new(s3).is_valid());
+    assert!(Passport::new(s1).all_present());
+    assert!(Passport::new(s2).all_present());
+    assert!(Passport::new(s3).all_present());
 }
 
 #[test]
-fn test_day4_passport_not_valid() {
+fn test_day4_passport_not_all_present() {
     let s1 = "ecl:gry  eyr:2020 hcl:#fffffd byr:1937 iyr:2017 cid:147 hgt:183cm";
     let s2 = "ecl:gry pid:860033327 byr:1937 iyr:2017 cid:147 hgt:183cm";
     let s3 = "ecl:gry pid:860033327 eyt:2020 hcl:#fffffd byr:1937 iyr:2017 cid:147 hgt:183cm";
-    assert!(!Passport::new(s1).is_valid());
-    assert!(!Passport::new(s2).is_valid());
-    assert!(!Passport::new(s3).is_valid());
+    assert!(!Passport::new(s1).all_present());
+    assert!(!Passport::new(s2).all_present());
+    assert!(!Passport::new(s3).all_present());
 }
 
 #[test]
