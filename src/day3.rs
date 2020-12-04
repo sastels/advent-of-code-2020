@@ -1,4 +1,3 @@
-#[derive(Debug)]
 pub struct Hill {
     pub data: Vec<String>,
 }
