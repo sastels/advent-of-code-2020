@@ -2,7 +2,6 @@ use crate::utils::join_lines;
 use regex::Regex;
 use std::collections::HashMap;
 
-#[derive(Debug)]
 pub struct Passport {
     pub fields: HashMap<String, String>,
 }
