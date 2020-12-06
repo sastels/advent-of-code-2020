@@ -10,6 +10,6 @@ fn test_day6_solve_a() {
 
 #[test]
 fn test_day6_solve_b() {
-    let data = read_lines("./data/day6.txt");
+    let data = read_lines("./data/day6_test.txt");
     assert_eq!(day6::solve_b(&data), 6);
 }
