@@ -55,16 +55,13 @@ impl Passport {
                 }
                 let re = Regex::new(r"#[0-9a-f]{6}").unwrap();
                 let cap = re.captures(self.fields.get(key).unwrap());
-                match cap {
-                    Some(_) => true,
-                    None => false,
-                }
+                cap.is_some()
             }
             "ecl" => {
                 let val = self.fields.get(key).unwrap();
                 ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"]
                     .iter()
-                    .filter(|c| c.to_string() == *val)
+                    .filter(|c| **c == *val)
                     .count()
                     == 1
             }
@@ -75,10 +72,7 @@ impl Passport {
                 }
                 let re = Regex::new(r"[\d]{9}").unwrap();
                 let cap = re.captures(self.fields.get(key).unwrap());
-                match cap {
-                    Some(_) => true,
-                    None => false,
-                }
+                cap.is_some()
             }
             &_ => true,
         }

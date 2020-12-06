@@ -18,20 +18,20 @@ pub fn join_lines(data: &[String]) -> Vec<String> {
     let mut strings: Vec<String> = vec![];
     let mut s = "".to_string();
     for line in data {
-        if line.len() > 0 {
-            if s.len() > 0 {
+        if !line.is_empty() {
+            if !s.is_empty() {
                 s.push(' ');
             }
             s.push_str(line);
         } else {
-            if s.len() > 0 {
+            if !s.is_empty() {
                 strings.push(s);
             }
             s = "".to_string();
         }
     }
     // append string in case file doesn't end in blank line
-    if s.len() > 0 {
+    if !s.is_empty() {
         strings.push(s);
     }
     strings
