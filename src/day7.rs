@@ -2,6 +2,7 @@
 // use itertools::Itertools;
 use regex::Regex;
 use std::collections::HashMap;
+use std::collections::HashSet;
 
 #[derive(Debug)]
 pub struct Rule {
@@ -31,7 +32,34 @@ impl Rule {
 }
 pub fn solve_a(data: &[String]) -> usize {
     let rules: Vec<Rule> = data.iter().map(|line| Rule::new(line)).collect();
-    0
+
+    let mut contained_in: HashMap<String, HashSet<String>> = HashMap::new();
+    for rule in &rules {
+        contained_in.insert(rule.outside.clone(), HashSet::new());
+    }
+    for rule in &rules {
+        for bag_in in rule.inside.keys() {
+            let mut in_set: HashSet<String> = contained_in.get(bag_in).unwrap().clone();
+            in_set.insert(rule.outside.clone());
+            contained_in.insert(bag_in.to_string(), in_set);
+        }
+    }
+
+    let mut containers: HashSet<String> = HashSet::new();
+    containers.insert("shiny gold bag".to_string());
+    loop {
+        let mut new_containers: HashSet<String> = HashSet::new();
+        for bag in &containers {
+            for outer_bag in contained_in.get(bag).unwrap() {
+                new_containers.insert(outer_bag.to_string());
+            }
+        }
+        if new_containers.is_subset(&containers) {
+            break;
+        }
+        containers.extend(new_containers);
+    }
+    containers.len() - 1 // still has the shiny gold bag
 }
 
 pub fn solve_b(_data: &[String]) -> usize {
