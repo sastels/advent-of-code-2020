@@ -4,7 +4,6 @@ use regex::Regex;
 use std::collections::HashMap;
 use std::collections::HashSet;
 
-#[derive(Debug)]
 pub struct Rule {
     pub outside: String,
     pub inside: HashMap<String, usize>,
@@ -62,6 +61,35 @@ pub fn solve_a(data: &[String]) -> usize {
     containers.len() - 1 // still has the shiny gold bag
 }
 
-pub fn solve_b(_data: &[String]) -> usize {
-    0
+pub fn solve_b(data: &[String]) -> usize {
+    let rules: Vec<Rule> = data.iter().map(|line| Rule::new(line)).collect();
+    let mut contains: HashMap<String, HashMap<String, usize>> = HashMap::new();
+
+    let mut total_num_bags = 0;
+
+    for rule in &rules {
+        contains.insert(rule.outside.clone(), rule.inside.clone());
+    }
+
+    let mut bags: HashMap<String, usize> = HashMap::new();
+    bags.insert("shiny gold bag".to_string(), 1);
+    loop {
+        let mut new_bags: HashMap<String, usize> = HashMap::new();
+        for (bag, bag_num) in &bags {
+            let bags_to_add = contains.get(bag).unwrap();
+            for (bag_adding, bag_adding_num) in bags_to_add {
+                let counter = new_bags.entry(bag_adding.to_string()).or_insert(0);
+                *counter += bag_num * bag_adding_num;
+            }
+        }
+
+        if new_bags.is_empty() {
+            break;
+        }
+        bags = new_bags.clone();
+        for value in bags.values() {
+            total_num_bags += value;
+        }
+    }
+    total_num_bags
 }
