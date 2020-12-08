@@ -19,24 +19,18 @@ impl Inst {
     pub fn new(op: &str, arg: &str) -> Self {
         let arg = arg.parse::<i32>().unwrap();
         match op {
-            "acc" => {
-                return Inst {
-                    op: Operation::Acc,
-                    arg,
-                }
-            }
-            "jmp" => {
-                return Inst {
-                    op: Operation::Jmp,
-                    arg,
-                }
-            }
-            "nop" => {
-                return Inst {
-                    op: Operation::Nop,
-                    arg,
-                }
-            }
+            "acc" => Inst {
+                op: Operation::Acc,
+                arg,
+            },
+            "jmp" => Inst {
+                op: Operation::Jmp,
+                arg,
+            },
+            "nop" => Inst {
+                op: Operation::Nop,
+                arg,
+            },
             _ => panic!(),
         }
     }
