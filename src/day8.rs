@@ -1,3 +1,4 @@
+use crate::utils::join_lines;
 use regex::Regex;
 use std::collections::HashSet;
 use std::convert::TryInto;
@@ -15,11 +16,9 @@ pub struct Inst {
 }
 
 impl Inst {
-    pub fn new(line: &str) -> Self {
-        let re = Regex::new(r"(\w\w\w) (.+)").unwrap();
-        let cap = re.captures(&line).unwrap();
-        let arg = cap[2].parse::<i32>().unwrap();
-        match &cap[1] {
+    pub fn new(op: &str, arg: &str) -> Self {
+        let arg = arg.parse::<i32>().unwrap();
+        match op {
             "acc" => {
                 return Inst {
                     op: Operation::Acc,
@@ -53,8 +52,16 @@ pub struct Program {
 
 impl Program {
     pub fn new(data: &[String]) -> Self {
+        let data = &join_lines(data)[0];
+        let re = Regex::new(r"(\w\w\w) ([+-]?\d+)").unwrap();
+
+        let instructions: Vec<Inst> = re
+            .captures_iter(data)
+            .map(|cap| Inst::new(&cap[1], &cap[2]))
+            .collect();
+
         Program {
-            instructions: data.iter().map(|s| Inst::new(s)).collect(),
+            instructions,
             inst_ptr: 0,
             accumulator: 0,
             finished: false,

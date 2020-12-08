@@ -7,10 +7,10 @@ use advent_2020::utils::read_lines;
 
 #[test]
 fn test_day8_inst_new() {
-    assert_eq!(Inst::new("nop 3").op, Operation::Nop);
-    assert_eq!(Inst::new("jmp 3").op, Operation::Jmp);
-    assert_eq!(Inst::new("acc 3").op, Operation::Acc);
-    assert_eq!(Inst::new("acc 3").arg, 3);
+    assert_eq!(Inst::new("nop", "3").op, Operation::Nop);
+    assert_eq!(Inst::new("jmp", "3").op, Operation::Jmp);
+    assert_eq!(Inst::new("acc", "3").op, Operation::Acc);
+    assert_eq!(Inst::new("acc", "3").arg, 3);
 }
 
 #[test]
