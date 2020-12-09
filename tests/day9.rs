@@ -18,8 +18,7 @@ fn test_day9_solve_a() {
 }
 
 #[test]
-#[ignore]
 fn test_day9_solve_b() {
     let data = read_lines("./data/day9_test.txt");
-    assert_eq!(day9::solve_b(&data, 5), 8);
+    assert_eq!(day9::solve_b(&data, 127), 62);
 }

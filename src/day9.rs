@@ -19,9 +19,21 @@ pub fn solve_a(data: &[String], period: usize) -> usize {
             return data[i];
         }
     }
-    0
+    panic!()
 }
 
-pub fn solve_b(_data: &[String], _period: usize) -> i32 {
-    0
+pub fn solve_b(data: &[String], target: usize) -> usize {
+    let data: Vec<usize> = data.iter().map(|x| x.parse::<usize>().unwrap()).collect();
+    for i in 0..data.len() {
+        for j in i..data.len() {
+            let sum: usize = data[i..j].iter().sum();
+            if sum == target {
+                return data[i..j].iter().min().unwrap() + data[i..j].iter().max().unwrap();
+            }
+            if sum > target {
+                continue;
+            }
+        }
+    }
+    panic!()
 }
