@@ -23,30 +23,6 @@ pub fn is_chain_valid(data: &[usize]) -> bool {
     true
 }
 
-// can assume data passed in is valid
-// if valid, return 1 + number of included valid sequences
-// for each index > fix_upto, delete this entry and check if valid. If so, call recursively
-// the fix_upto ensures that we don't repeat sequences
-pub fn count_included_valid(data: &[usize], fix_upto: usize) -> usize {
-    if data.len() >= 90 {
-        println!("{} / {}", fix_upto, data.len());
-    }
-
-    return 1
-        + ((fix_upto + 1)..(data.len() - 1))
-            .map(|i| {
-                let mut sub_chain: Vec<usize> = data.to_vec();
-                sub_chain.remove(i);
-                if sub_chain[i] - sub_chain[i - 1] > 3 {
-                    return 0;
-                } else {
-                    // sub_chain must be valid!
-                    return count_included_valid(&sub_chain, i - 1);
-                }
-            })
-            .sum::<usize>();
-}
-
 fn consecutive_slices(data: &[usize]) -> Vec<&[usize]> {
     let mut slice_start = 0;
     let mut result = Vec::new();
@@ -101,19 +77,15 @@ pub fn solve_b(data: &[String]) -> usize {
     data.push(data.iter().max().unwrap() + 3);
     data.sort();
 
-    let mut can_delete: Vec<usize> = vec![];
-    for i in 1..data.len() - 1 {
-        let mut sub_chain: Vec<usize> = data.to_vec();
-        sub_chain.remove(i);
-        if is_chain_valid(&sub_chain) {
-            can_delete.push(i);
-        }
-    }
-    let can_delete_groups = consecutive_slices(&can_delete);
-    for group in &can_delete_groups {
-        let num_valid = delete_group_valid(&data, group);
-    }
-    can_delete_groups
+    let can_delete: Vec<usize> = (1..data.len() - 1)
+        .filter(|i| {
+            let mut sub_chain: Vec<usize> = data.to_vec();
+            sub_chain.remove(*i);
+            is_chain_valid(&sub_chain)
+        })
+        .collect();
+
+    consecutive_slices(&can_delete)
         .iter()
         .map(|group| delete_group_valid(&data, group))
         .product()
