@@ -10,20 +10,20 @@ fn test_day10_solve_a() {
 
 #[test]
 fn test_day10_is_chain_valid_true() {
-    assert!(is_chain_valid([0, 1, 2]));
-    assert!(is_chain_valid([2, 5, 8]));
-    assert!(is_chain_valid([0, 1, 3, 5, 6, 9]));
+    assert!(is_chain_valid(&[0, 1, 2]));
+    assert!(is_chain_valid(&[2, 5, 8]));
+    assert!(is_chain_valid(&[0, 1, 3, 5, 6, 9]));
 }
 
 #[test]
 fn test_day10_is_chain_valid_false() {
-    assert!(!is_chain_valid([0, 4]));
-    assert!(!is_chain_valid([0, 2, 4, 20]));
+    assert!(!is_chain_valid(&[0, 4]));
+    assert!(!is_chain_valid(&[0, 2, 4, 20]));
+    assert!(!is_chain_valid(&[6, 4]));
 }
 
 #[test]
-#[ignore]
 fn test_day10_solve_b() {
     let data = read_lines("./data/day10_test_1.txt");
-    assert_eq!(day10::solve_b(&data), 0);
+    assert_eq!(day10::solve_b(&data), 8);
 }
