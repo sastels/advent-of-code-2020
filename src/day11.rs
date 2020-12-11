@@ -1,3 +1,4 @@
+use crate::utils::join_lines;
 use itertools::Itertools;
 use std::fmt;
 
@@ -102,8 +103,15 @@ impl Seating {
     }
 }
 
-pub fn solve_a(_data: &[String]) -> usize {
-    0
+pub fn solve_a(data: &[String], num_cols: usize) -> usize {
+    let data = &join_lines(&data)[0].replace(" ", "");
+    let mut seating = Seating::new(data, num_cols);
+    loop {
+        if !seating.step() {
+            break;
+        }
+    }
+    seating.num_occupied()
 }
 
 pub fn solve_b(_data: &[String]) -> usize {

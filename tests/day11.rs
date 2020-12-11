@@ -55,10 +55,9 @@ fn test_day11_seating_step() {
 }
 
 #[test]
-#[ignore]
 fn test_day11_solve_a() {
     let data = read_lines("./data/day11_test.txt");
-    assert_eq!(day11::solve_a(&data), 666);
+    assert_eq!(day11::solve_a(&data, 10), 37);
 }
 
 #[test]
