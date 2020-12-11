@@ -1,3 +1,89 @@
+use itertools::Itertools;
+// use std::convert::TryInto;
+use std::fmt;
+
+#[derive(Debug, PartialEq)]
+pub enum SeatStatus {
+    Floor,
+    Occupied,
+    Empty,
+}
+
+pub struct Seating {
+    pub plan: Vec<SeatStatus>,
+    pub num_rows: usize,
+    pub num_cols: usize,
+}
+
+impl fmt::Display for Seating {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        for i in 0..self.num_rows {
+            for j in 0..self.num_cols {
+                match self.status(i, j) {
+                    SeatStatus::Empty => write!(f, "L")?,
+                    SeatStatus::Floor => write!(f, ".")?,
+                    SeatStatus::Occupied => write!(f, "#")?,
+                }
+            }
+            write!(f, "\n")?;
+        }
+        write!(f, "rows: {}  cols: {}", self.num_rows, self.num_cols)?;
+        Ok(())
+    }
+}
+
+impl Seating {
+    pub fn new(data: &str, num_cols: usize) -> Self {
+        let plan: Vec<SeatStatus> = data
+            .chars()
+            .map(|c| match c {
+                '.' => SeatStatus::Floor,
+                '#' => SeatStatus::Occupied,
+                'L' => SeatStatus::Empty,
+                _ => {
+                    println!("found <{}>", c);
+                    panic!()
+                }
+            })
+            .collect();
+        Seating {
+            plan,
+            num_rows: data.len() / num_cols,
+            num_cols,
+        }
+    }
+
+    pub fn status(&self, row: usize, col: usize) -> &SeatStatus {
+        &self.plan[row * self.num_cols + col]
+    }
+
+    pub fn num_occupied(&self) -> usize {
+        (0..self.num_rows)
+            .cartesian_product(0..self.num_cols)
+            .filter(|(row, col)| *self.status(*row, *col) == SeatStatus::Occupied)
+            .count()
+    }
+
+    pub fn num_occupied_neighbours(&self, row: usize, col: usize) -> usize {
+        let row = row as i32;
+        let col = col as i32;
+        (-1..2)
+            .cartesian_product(-1..2)
+            .filter(|(i, j)| *i != 0 || *j != 0)
+            .map(|(i, j)| (row + i, col + j))
+            .filter(|(row, col)| {
+                0 <= *row
+                    && *row <= self.num_rows as i32
+                    && 0 <= *col
+                    && *col <= self.num_cols as i32
+            })
+            .filter(|(row, col)| *self.status(*row as usize, *col as usize) == SeatStatus::Occupied)
+            .count()
+    }
+
+    pub fn step(&mut self) {}
+}
+
 pub fn solve_a(_data: &[String]) -> usize {
     0
 }
