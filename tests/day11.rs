@@ -40,6 +40,21 @@ fn test_day11_seating_num_occupied_neighbours() {
 }
 
 #[test]
+fn test_day11_seating_step() {
+    let data = read_lines("./data/day11_test.txt");
+    let data = &join_lines(&data)[0].replace(" ", "");
+    let mut seating = Seating::new(data, 10);
+
+    assert!(seating.step());
+    assert!(seating.step());
+    assert!(seating.step());
+    assert!(seating.step());
+    assert!(seating.step());
+    assert!(!seating.step()); // finally nothing changes
+    assert_eq!(seating.num_occupied(), 37);
+}
+
+#[test]
 #[ignore]
 fn test_day11_solve_a() {
     let data = read_lines("./data/day11_test.txt");

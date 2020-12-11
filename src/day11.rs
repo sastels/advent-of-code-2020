@@ -1,8 +1,7 @@
 use itertools::Itertools;
-// use std::convert::TryInto;
 use std::fmt;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub enum SeatStatus {
     Floor,
     Occupied,
@@ -40,10 +39,7 @@ impl Seating {
                 '.' => SeatStatus::Floor,
                 '#' => SeatStatus::Occupied,
                 'L' => SeatStatus::Empty,
-                _ => {
-                    println!("found <{}>", c);
-                    panic!()
-                }
+                _ => panic!(),
             })
             .collect();
         Seating {
@@ -72,16 +68,38 @@ impl Seating {
             .filter(|(i, j)| *i != 0 || *j != 0)
             .map(|(i, j)| (row + i, col + j))
             .filter(|(row, col)| {
-                0 <= *row
-                    && *row <= self.num_rows as i32
-                    && 0 <= *col
-                    && *col <= self.num_cols as i32
+                0 <= *row && *row < self.num_rows as i32 && 0 <= *col && *col < self.num_cols as i32
             })
             .filter(|(row, col)| *self.status(*row as usize, *col as usize) == SeatStatus::Occupied)
             .count()
     }
 
-    pub fn step(&mut self) {}
+    // true if there was a change
+    pub fn step(&mut self) -> bool {
+        let mut new_plan: Vec<SeatStatus> = vec![];
+        let mut something_changed = false;
+        for (row, col) in (0..self.num_rows).cartesian_product(0..self.num_cols) {
+            let mut new_seat = *self.status(row, col);
+            match self.status(row, col) {
+                SeatStatus::Empty => {
+                    if self.num_occupied_neighbours(row, col) == 0 {
+                        new_seat = SeatStatus::Occupied;
+                        something_changed = true;
+                    }
+                }
+                SeatStatus::Occupied => {
+                    if self.num_occupied_neighbours(row, col) >= 4 {
+                        new_seat = SeatStatus::Empty;
+                        something_changed = true;
+                    }
+                }
+                SeatStatus::Floor => {}
+            }
+            new_plan.push(new_seat);
+        }
+        self.plan = new_plan;
+        something_changed
+    }
 }
 
 pub fn solve_a(_data: &[String]) -> usize {
