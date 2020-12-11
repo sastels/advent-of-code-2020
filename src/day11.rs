@@ -33,7 +33,10 @@ impl fmt::Display for Seating {
 }
 
 impl Seating {
-    pub fn new(data: &str, num_cols: usize) -> Self {
+    pub fn new(data: &[String]) -> Self {
+        let num_cols = data[0].len();
+        let data = &join_lines(&data)[0].replace(" ", "");
+
         let plan: Vec<SeatStatus> = data
             .chars()
             .map(|c| match c {
@@ -75,6 +78,10 @@ impl Seating {
             .count()
     }
 
+    pub fn num_occupied_visible_neighbours(&self, _row: usize, _col: usize) -> usize {
+        0
+    }
+
     // true if there was a change
     pub fn step(&mut self) -> bool {
         let mut new_plan: Vec<SeatStatus> = vec![];
@@ -103,9 +110,8 @@ impl Seating {
     }
 }
 
-pub fn solve_a(data: &[String], num_cols: usize) -> usize {
-    let data = &join_lines(&data)[0].replace(" ", "");
-    let mut seating = Seating::new(data, num_cols);
+pub fn solve_a(data: &[String]) -> usize {
+    let mut seating = Seating::new(data);
     loop {
         if !seating.step() {
             break;

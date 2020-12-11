@@ -53,6 +53,6 @@ fn main() {
     // println!("Day 10 B: {}", day10::solve_b(&data));
 
     let data = read_lines("./data/day11.txt");
-    println!("Day 11 A: {}", day11::solve_a(&data, 99));
+    println!("Day 11 A: {}", day11::solve_a(&data));
     println!("Day 11 B: {}", day11::solve_b(&data));
 }
