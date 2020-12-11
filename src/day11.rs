@@ -25,7 +25,7 @@ impl fmt::Display for Seating {
                     SeatStatus::Occupied => write!(f, "#")?,
                 }
             }
-            write!(f, "\n")?;
+            writeln!(f)?;
         }
         write!(f, "rows: {}  cols: {}", self.num_rows, self.num_cols)?;
         Ok(())
@@ -78,8 +78,32 @@ impl Seating {
             .count()
     }
 
-    pub fn num_occupied_visible_neighbours(&self, _row: usize, _col: usize) -> usize {
-        0
+    pub fn is_occupied_dir(&self, row: usize, col: usize, dir_row: i32, dir_col: i32) -> bool {
+        let mut row = row as i32 + dir_row;
+        let mut col = col as i32 + dir_col;
+        loop {
+            if row < 0
+                || row >= self.num_rows as i32
+                || col < 0
+                || col >= self.num_cols as i32
+                || *self.status(row as usize, col as usize) == SeatStatus::Empty
+            {
+                return false;
+            } else if *self.status(row as usize, col as usize) == SeatStatus::Occupied {
+                return true;
+            }
+            row += dir_row;
+            col += dir_col;
+        }
+    }
+
+    pub fn num_occupied_visible_neighbours(&self, row: usize, col: usize) -> usize {
+        (-1..2)
+            .cartesian_product(-1..2)
+            .filter(|(i, j)| *i != 0 || *j != 0)
+            .map(|(i, j)| self.is_occupied_dir(row, col, i, j))
+            .filter(|x| *x)
+            .count()
     }
 
     // true if there was a change
@@ -108,6 +132,33 @@ impl Seating {
         self.plan = new_plan;
         something_changed
     }
+
+    // true if there was a change
+    pub fn step_b(&mut self) -> bool {
+        let mut new_plan: Vec<SeatStatus> = vec![];
+        let mut something_changed = false;
+        for (row, col) in (0..self.num_rows).cartesian_product(0..self.num_cols) {
+            let mut new_seat = *self.status(row, col);
+            match self.status(row, col) {
+                SeatStatus::Empty => {
+                    if self.num_occupied_visible_neighbours(row, col) == 0 {
+                        new_seat = SeatStatus::Occupied;
+                        something_changed = true;
+                    }
+                }
+                SeatStatus::Occupied => {
+                    if self.num_occupied_visible_neighbours(row, col) >= 5 {
+                        new_seat = SeatStatus::Empty;
+                        something_changed = true;
+                    }
+                }
+                SeatStatus::Floor => {}
+            }
+            new_plan.push(new_seat);
+        }
+        self.plan = new_plan;
+        something_changed
+    }
 }
 
 pub fn solve_a(data: &[String]) -> usize {
@@ -120,6 +171,12 @@ pub fn solve_a(data: &[String]) -> usize {
     seating.num_occupied()
 }
 
-pub fn solve_b(_data: &[String]) -> usize {
-    0
+pub fn solve_b(data: &[String]) -> usize {
+    let mut seating = Seating::new(data);
+    loop {
+        if !seating.step_b() {
+            break;
+        }
+    }
+    seating.num_occupied()
 }

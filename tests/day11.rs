@@ -51,12 +51,25 @@ fn test_day11_seating_step() {
 }
 
 #[test]
-#[ignore]
+fn test_day11_seating_is_occupied_dir() {
+    let data = read_lines("./data/day11_test_2.txt");
+    let seating = Seating::new(&data);
+    assert_eq!(seating.is_occupied_dir(4, 3, 0, -1), true);
+    assert_eq!(seating.is_occupied_dir(4, 3, 0, 1), true);
+    assert_eq!(seating.is_occupied_dir(4, 3, 1, 0), true);
+    assert_eq!(seating.is_occupied_dir(3, 3, 0, 1), false);
+    assert_eq!(seating.is_occupied_dir(3, 3, 0, -1), false);
+    assert_eq!(seating.is_occupied_dir(3, 3, 0, 1), false);
+}
+
+#[test]
 fn test_day11_seating_num_occupied_visible_neighbours() {
     let data = read_lines("./data/day11_test_2.txt");
     let seating = Seating::new(&data);
-    assert_eq!(seating.num_occupied_visible_neighbours(3, 3), 0)
+    assert_eq!(seating.num_occupied_visible_neighbours(4, 3), 8);
+    assert_eq!(seating.num_occupied_visible_neighbours(3, 3), 2);
 }
+
 #[test]
 fn test_day11_solve_a() {
     let data = read_lines("./data/day11_test.txt");
@@ -64,8 +77,7 @@ fn test_day11_solve_a() {
 }
 
 #[test]
-#[ignore]
 fn test_day11_solve_b() {
     let data = read_lines("./data/day11_test.txt");
-    assert_eq!(day11::solve_b(&data), 666);
+    assert_eq!(day11::solve_b(&data), 26);
 }
