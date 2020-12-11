@@ -32,7 +32,7 @@ fn consecutive_slices(data: &[usize]) -> Vec<&[usize]> {
             slice_start = i;
         }
     }
-    if data.len() > 0 {
+    if !data.is_empty() {
         result.push(&data[slice_start..]);
     }
     result
