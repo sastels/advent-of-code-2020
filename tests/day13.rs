@@ -5,7 +5,7 @@ use advent_2020::utils::read_lines;
 #[test]
 fn test_day13_solve_a() {
     let data = read_lines("./data/day13_test.txt");
-    assert_eq!(day13::solve_a(&data), 0);
+    assert_eq!(day13::solve_a(&data), 295);
 }
 
 #[test]
