@@ -1,11 +1,11 @@
-// use advent_2020::day1;
+use advent_2020::day1;
 // use advent_2020::day10;
 // use advent_2020::day11;
 // use advent_2020::day12;
 use advent_2020::day13;
 use advent_2020::day14;
-// use advent_2020::day2;
-// use advent_2020::day3;
+use advent_2020::day2;
+use advent_2020::day3;
 // use advent_2020::day4;
 // use advent_2020::day5;
 // use advent_2020::day6;
@@ -13,11 +13,35 @@ use advent_2020::day14;
 // use advent_2020::day8;
 // use advent_2020::day9;
 use advent_2020::utils::read_lines;
+use std::env;
 
 fn main() {
-    // let data = read_lines("./data/day1.txt");
-    // println!("Day 1 A: {}", day1::solve_a(&data));
-    // println!("Day 1 B: {}", day1::solve_b(&data));
+    let args: Vec<String> = env::args().collect();
+    let day = &args[1];
+    match day.as_str() {
+        "1" => {
+            let data = read_lines("./data/day1.txt");
+            println!("Day 1 A: {}", day1::solve_a(&data));
+            println!("Day 1 B: {}", day1::solve_b(&data));
+        }
+        "2" => {
+            let data = read_lines("./data/day1.txt");
+            println!("Day 2 A: {}", day2::solve_a(&data));
+            println!("Day 2 B: {}", day2::solve_b(&data));
+        }
+        "3" => {
+            let data = read_lines("./data/day1.txt");
+            println!("Day 3 A: {}", day3::solve_a(&data));
+            println!("Day 3 B: {}", day3::solve_b(&data));
+        }
+        "14" => {
+            let data = read_lines("./data/day14.txt");
+            println!("Day 14 A: {}", day14::solve_a(&data));
+            println!("Day 14 B: {}", day14::solve_b(&data));
+        }
+
+        _ => panic!(),
+    }
 
     // let data = read_lines("./data/day2.txt");
     // println!("Day 2 A: {}", day2::solve_a(&data));
