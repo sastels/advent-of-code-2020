@@ -3,6 +3,7 @@
 // use advent_2020::day11;
 // use advent_2020::day12;
 use advent_2020::day13;
+use advent_2020::day14;
 // use advent_2020::day2;
 // use advent_2020::day3;
 // use advent_2020::day4;
@@ -65,4 +66,8 @@ fn main() {
     let data = read_lines("./data/day13.txt");
     println!("Day 13 A: {}", day13::solve_a(&data));
     println!("Day 13 B: {}", day13::solve_b(&data));
+
+    let data = read_lines("./data/day13.txt");
+    println!("Day 14 A: {}", day14::solve_a(&data));
+    println!("Day 14 B: {}", day14::solve_b(&data));
 }
