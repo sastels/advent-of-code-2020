@@ -8,8 +8,7 @@ fn a() {
 }
 
 #[test]
-#[ignore]
 fn b() {
-    let data = read_lines("./data/day14_test.txt");
-    assert_eq!(solve_b(&data), 666);
+    let data = read_lines("./data/day14_test_b.txt");
+    assert_eq!(solve_b(&data), 208);
 }
