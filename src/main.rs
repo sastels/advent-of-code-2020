@@ -27,6 +27,9 @@ use std::env;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
+    if args.len() < 2 {
+        panic!("usage: cargo run n")
+    }
     let day = &args[1];
     match day.as_str() {
         "1" => {
@@ -151,6 +154,6 @@ fn main() {
             println!("Day 20 A: {}", day24::solve_a(&data));
             println!("Day 20 B: {}", day24::solve_b(&data));
         }
-        _ => panic!(),
+        _ => panic!("usage: cargo run n for n in 1..=24"),
     }
 }
