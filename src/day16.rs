@@ -1,6 +1,6 @@
 use std::ops::RangeInclusive;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Rule {
     field: String,
     range0: RangeInclusive<usize>,
@@ -100,6 +100,46 @@ pub fn solve_b(data: &[String]) -> usize {
     let mut nearby_tickets = input.nearby_tickets.clone();
     nearby_tickets.retain(|t| is_valid_ticket(&(input.rules), t));
     input.nearby_tickets = nearby_tickets;
-    println!("{:?}", input.nearby_tickets);
-    666
+
+    let mut field_order: Vec<Vec<Rule>> = (0..input.my_ticket.len())
+        .map(|_| input.rules.clone())
+        .collect();
+
+    for ticket in input.nearby_tickets {
+        for (index, n) in ticket.iter().enumerate() {
+            field_order[index].retain(|r| r.is_valid(*n));
+        }
+    }
+
+    // this is painful :/
+    loop {
+        let mut new_field_order = field_order.clone();
+        let mut changed = false;
+        for (index, rules) in field_order.iter().enumerate() {
+            if rules.len() == 1 {
+                let name = &rules[0].field;
+                for new_index in 0..field_order.len() {
+                    if new_index != index {
+                        new_field_order[new_index].retain(|r| r.field != name.to_string());
+                    }
+                    if new_field_order[new_index].len() != field_order[new_index].len() {
+                        changed = true;
+                    }
+                }
+            }
+        }
+        field_order = new_field_order;
+
+        if !changed {
+            break;
+        }
+    }
+
+    input
+        .my_ticket
+        .iter()
+        .zip(field_order)
+        .filter(|(_, rules)| rules[0].field.contains("eparture"))
+        .map(|(n, _)| n)
+        .product()
 }
