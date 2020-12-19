@@ -53,6 +53,10 @@ pub fn parse_input(data: &[String]) -> (HashMap<String, Rule>, Vec<String>) {
     (rules, messages)
 }
 
+pub fn matches(message: &str, rule: &str, rules: &HashMap<String, Rule>) -> bool {
+    false
+}
+
 pub fn solve_a(_data: &[String]) -> usize {
     unimplemented!()
 }

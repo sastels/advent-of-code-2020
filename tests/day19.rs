@@ -1,4 +1,4 @@
-use advent_2020::day19::{parse_input, solve_a, solve_b, Rule};
+use advent_2020::day19::{matches, parse_input, solve_a, solve_b, Rule};
 use advent_2020::utils::read_lines;
 
 #[test]
@@ -38,6 +38,16 @@ fn parse_input_messages() {
     let (_, messages) = parse_input(&data);
     assert_eq!(messages.len(), 5);
     assert_eq!(messages[2], "abbbab");
+}
+
+#[test]
+
+fn matches_1() {
+    let data = read_lines("./data/day19_test.txt");
+    let (rules, _) = parse_input(&data);
+    assert!(matches("ababbb", "0", &rules));
+    assert!(matches("aba", "aba", &rules));
+    assert!(!matches("bababa", "0", &rules));
 }
 
 #[test]
