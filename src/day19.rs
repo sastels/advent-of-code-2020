@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 pub struct Rule {
     pub id: String,
     pub lhs: Vec<String>,
@@ -30,6 +32,25 @@ impl Rule {
         }
         Rule { id, lhs, rhs }
     }
+}
+
+pub fn parse_input(data: &[String]) -> (HashMap<String, Rule>, Vec<String>) {
+    let mut rules: HashMap<String, Rule> = HashMap::new();
+    let mut messages: Vec<String> = vec![];
+    let mut parsing_now = "rules";
+    for line in data {
+        if line.is_empty() {
+            parsing_now = "messages";
+            continue;
+        }
+        if parsing_now == "rules" {
+            let rule = Rule::new(line);
+            rules.insert(rule.id.clone(), rule);
+        } else {
+            messages.push(line.to_string());
+        }
+    }
+    (rules, messages)
 }
 
 pub fn solve_a(_data: &[String]) -> usize {
