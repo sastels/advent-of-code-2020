@@ -10,19 +10,26 @@ fn test_bits_to_usize() {
 }
 
 #[test]
+#[ignore]
 fn test_tile() {
     let data = read_lines("./data/day20_test.txt");
     let data = join_lines(&data);
     let tile = Tile::new(&data[0]);
     println!("{}", tile);
+
+    let tile_rot = tile.rotate();
+    let tile_flip = tile.flip();
+
+    println!("Rotate {}", tile_rot);
+    println!("Flip {}", tile_flip);
     assert!(false);
 }
 
 #[test]
-#[ignore]
+
 fn a() {
     let data = read_lines("./data/day20_test.txt");
-    assert_eq!(solve_a(&data), 0);
+    assert_eq!(solve_a(&data), 20899048083289);
 }
 
 #[test]
