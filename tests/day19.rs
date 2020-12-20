@@ -84,9 +84,15 @@ fn matches_complicated() {
 }
 
 #[test]
-fn a() {
+fn a_1() {
     let data = read_lines("./data/day19_test.txt");
     assert_eq!(solve_a(&data), 2);
+}
+
+#[test]
+fn a_2() {
+    let data = read_lines("./data/day19_test_a.txt");
+    assert_eq!(solve_a(&data), 3);
 }
 
 #[test]
