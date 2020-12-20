@@ -3,13 +3,10 @@ use std::cmp;
 use std::collections::HashMap;
 
 pub fn find_first_diff_pos(a: &str, b: &str) -> Option<usize> {
-    // println!("Find diff of {} and {}", a, b);
     if a == b {
-        // println!("no diff!");
         return None;
     }
     for (n, (ac, bc)) in a.chars().zip(b.chars()).enumerate() {
-        // println!("{} -- {}", ac, bc);
         if ac != bc {
             if bc == 'a' || bc == 'b' {
                 return Some(666); // this will force a mismatch in our case
@@ -70,8 +67,6 @@ pub fn parse_input(data: &[String]) -> (HashMap<String, Rule>, Vec<String>) {
 pub fn matches(message: &str, rule: &str, rules: &HashMap<String, Rule>) -> bool {
     let message = message.replace(" ", "").chars().join(" "); // make sure spaced out
 
-    // println!("matches <{}>  <{}>", message, rule);
-
     // rule is just a's and b's
     if rule
         .replace("a", "")
@@ -84,8 +79,6 @@ pub fn matches(message: &str, rule: &str, rules: &HashMap<String, Rule>) -> bool
 
     // check ab prefix of rule
     let first_diff = find_first_diff_pos(&message, rule);
-
-    // println!("first diff {:?}", first_diff);
 
     if first_diff.is_none() {
         return true; // 100% match
