@@ -162,6 +162,14 @@ pub fn solve_a(data: &[String]) -> usize {
         .count()
 }
 
-pub fn solve_b(_data: &[String]) -> usize {
-    unimplemented!()
+pub fn solve_b(data: &[String]) -> usize {
+    let (rules, messages) = parse_input(&data);
+    messages
+        .iter()
+        .enumerate()
+        .inspect(|(n, _)| println!("{} / {}", n, messages.len()))
+        .map(|(_, m)| m)
+        .map(|m| matches(m, "0", &rules))
+        .filter(|x| *x)
+        .count()
 }

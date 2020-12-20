@@ -96,8 +96,7 @@ fn a_2() {
 }
 
 #[test]
-#[ignore]
 fn b() {
-    let data = read_lines("./data/day19_test.txt");
-    assert_eq!(solve_b(&data), 0);
+    let data = read_lines("./data/day19_test_b.txt");
+    assert_eq!(solve_b(&data), 12);
 }
