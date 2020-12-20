@@ -1,5 +1,4 @@
-use advent_2020::utils::join_lines;
-use advent_2020::utils::read_lines;
+use advent_2020::utils::{join_lines, read_lines};
 
 #[test]
 fn test_utils_join_lines() {

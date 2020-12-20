@@ -148,7 +148,6 @@ pub fn solve_a(data: &[String]) -> usize {
     messages
         .iter()
         .enumerate()
-        .inspect(|(n, _)| println!("{} / {}", n, messages.len()))
         .map(|(_, m)| m)
         .map(|m| matches(m, "0", &rules))
         .filter(|x| *x)
@@ -160,7 +159,6 @@ pub fn solve_b(data: &[String]) -> usize {
     messages
         .iter()
         .enumerate()
-        .inspect(|(n, _)| println!("{} / {}", n, messages.len()))
         .map(|(_, m)| m)
         .map(|m| matches(m, "0", &rules))
         .filter(|x| *x)
