@@ -138,6 +138,21 @@ pub fn find_match(sig: usize, pos: &str, variants: &HashMap<usize, Vec<Tile>>) -
     None
 }
 
+pub fn find_top_corner(tile_variants: &HashMap<usize, Vec<Tile>>) -> Tile {
+    for (id, tiles) in tile_variants {
+        let mut variants = tile_variants.clone();
+        variants.remove(id);
+        for tile in tiles {
+            if find_match(tile.top, "bottom", &variants).is_none()
+                && find_match(tile.left, "right", &variants).is_none()
+            {
+                return tile.clone();
+            }
+        }
+    }
+    panic!()
+}
+
 pub fn solve_a(data: &[String]) -> usize {
     let data = join_lines(&data);
     let tiles: Vec<Tile> = data.iter().map(|s| Tile::new(s)).collect();
@@ -167,15 +182,22 @@ pub fn solve_a(data: &[String]) -> usize {
         around.push(find_match(tile.left, "right", &variants));
         around.push(find_match(tile.right, "left", &variants));
 
-        // println!("{}", tile.id);
-        // for x in &around {
-        //     if x.is_some() {
-        //         print!("{}  ", x.clone().unwrap().id);
-        //     }
-        // }
-        // println!();
+        let around: Vec<String> = around
+            .iter()
+            .map(|t| {
+                if t.is_some() {
+                    format!("{}", t.clone().unwrap().id)
+                } else {
+                    " .. ".to_string()
+                }
+            })
+            .collect();
+        // println!("     {}", around[0]);
+        // println!("{} {} {}", around[2], tile.id, around[3]);
+        // println!("     {}", around[1]);
+        // println!("{}:  ", tile.id);
 
-        if around.iter().filter(|x| x.is_some()).count() == 2 {
+        if around.iter().filter(|x| *x != " .. ").count() == 2 {
             println!("corner: {}", tile.id);
             corner_prod *= tile.id;
         }
@@ -184,6 +206,27 @@ pub fn solve_a(data: &[String]) -> usize {
     corner_prod
 }
 
-pub fn solve_b(_data: &[String]) -> usize {
-    unimplemented!()
+pub fn solve_b(data: &[String]) -> usize {
+    let data = join_lines(&data);
+    let tiles: Vec<Tile> = data.iter().map(|s| Tile::new(s)).collect();
+    let mut tile_variants: HashMap<usize, Vec<Tile>> = HashMap::new();
+
+    for tile in &tiles {
+        let mut variants: Vec<Tile> = vec![];
+        variants.push(tile.rotate()); // 0
+        variants.push(variants[0].rotate()); // 1
+        variants.push(variants[1].rotate()); // 2
+        variants.push(variants[2].rotate()); // 3
+        variants.push(tile.flip()); // 4
+        variants.push(variants[4].rotate()); // 5
+        variants.push(variants[5].rotate()); // 6
+        variants.push(variants[6].rotate()); // 7
+        tile_variants.insert(tile.id, variants);
+    }
+
+    let corner = find_top_corner(&tile_variants);
+
+    println!("corner: {}", corner);
+
+    0
 }
