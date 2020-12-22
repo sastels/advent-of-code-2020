@@ -104,6 +104,24 @@ impl Tile {
         tile.set_signature();
         tile
     }
+
+    pub fn shrink(&self) -> Tile {
+        let mut new_data = BitVec::new();
+        for y in 1..self.dim - 1 {
+            for x in 1..self.dim - 1 {
+                new_data.push(self.get_bit(x, y));
+            }
+        }
+        Tile {
+            id: self.id,
+            dim: self.dim - 2,
+            data: new_data,
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+        }
+    }
 }
 
 impl fmt::Display for Tile {
@@ -294,9 +312,15 @@ pub fn solve_b(data: &[String]) -> usize {
 
     let tile_variants = compute_variants(&tiles);
 
-    let pic = find_pic(&tile_variants);
+    let mut pic_tiles = find_pic(&tile_variants);
 
-    let big_pic = glue_tiles(&pic);
+    let mut big_pic = glue_tiles(&pic_tiles);
+
+    println!("{}\n\n", big_pic);
+
+    pic_tiles = pic_tiles.iter().map(|tile| tile.shrink()).collect();
+
+    big_pic = glue_tiles(&pic_tiles);
 
     println!("{}", big_pic);
 
