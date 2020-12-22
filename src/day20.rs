@@ -45,18 +45,24 @@ impl Tile {
     }
 
     pub fn set_signature(&mut self) {
-        let bits: Vec<bool> = (0..self.dim).map(|x| self.get_bit(x, 0)).collect();
-        self.top = bits_to_usize(&bits);
-        let bits: Vec<bool> = (0..self.dim).map(|x| self.get_bit(x, 9)).collect();
-        self.bottom = bits_to_usize(&bits);
-        let bits: Vec<bool> = (0..self.dim).map(|y| self.get_bit(0, y)).collect();
-        self.left = bits_to_usize(&bits);
-        let bits: Vec<bool> = (0..self.dim).map(|y| self.get_bit(9, y)).collect();
-        self.right = bits_to_usize(&bits);
+        if self.dim == 10 {
+            let bits: Vec<bool> = (0..self.dim).map(|x| self.get_bit(x, 0)).collect();
+            self.top = bits_to_usize(&bits);
+            let bits: Vec<bool> = (0..self.dim).map(|x| self.get_bit(x, 9)).collect();
+            self.bottom = bits_to_usize(&bits);
+            let bits: Vec<bool> = (0..self.dim).map(|y| self.get_bit(0, y)).collect();
+            self.left = bits_to_usize(&bits);
+            let bits: Vec<bool> = (0..self.dim).map(|y| self.get_bit(9, y)).collect();
+            self.right = bits_to_usize(&bits);
+        }
     }
 
     pub fn get_bit(&self, x: usize, y: usize) -> bool {
         self.data[self.dim * y + x]
+    }
+
+    pub fn get_bit_safe(&self, x: usize, y: usize) -> Option<bool> {
+        self.data.get(self.dim * y + x)
     }
 
     pub fn set_bit(&mut self, x: usize, y: usize, val: bool) {
@@ -77,7 +83,7 @@ impl Tile {
         };
         for y in 0..self.dim {
             for x in 0..self.dim {
-                tile.set_bit(9 - y, x, self.get_bit(x, y));
+                tile.set_bit(self.dim - 1 - y, x, self.get_bit(x, y));
             }
         }
         tile.set_signature();
@@ -163,20 +169,7 @@ pub fn find_match(sig: usize, pos: &str, variants: &HashMap<usize, Vec<Tile>>) -
 pub fn solve_a(data: &[String]) -> usize {
     let data = join_lines(&data);
     let tiles: Vec<Tile> = data.iter().map(|s| Tile::new(s)).collect();
-    let mut tile_variants: HashMap<usize, Vec<Tile>> = HashMap::new();
-
-    for tile in &tiles {
-        let mut variants: Vec<Tile> = vec![];
-        variants.push(tile.rotate()); // 0
-        variants.push(variants[0].rotate()); // 1
-        variants.push(variants[1].rotate()); // 2
-        variants.push(variants[2].rotate()); // 3
-        variants.push(tile.flip()); // 4
-        variants.push(variants[4].rotate()); // 5
-        variants.push(variants[5].rotate()); // 6
-        variants.push(variants[6].rotate()); // 7
-        tile_variants.insert(tile.id, variants);
-    }
+    let tile_variants = compute_variants(&tiles);
 
     let mut corner_prod = 1;
     for tile in &tiles {
@@ -199,13 +192,8 @@ pub fn solve_a(data: &[String]) -> usize {
                 }
             })
             .collect();
-        // println!("     {}", around[0]);
-        // println!("{} {} {}", around[2], tile.id, around[3]);
-        // println!("     {}", around[1]);
-        // println!("{}:  ", tile.id);
 
         if around.iter().filter(|x| *x != " .. ").count() == 2 {
-            println!("corner: {}", tile.id);
             corner_prod *= tile.id;
         }
     }
@@ -257,14 +245,12 @@ pub fn find_pic(variants: &HashMap<usize, Vec<Tile>>) -> Vec<Tile> {
     loop {
         match find_match(tile.right, "left", &variants) {
             Some(t) => {
-                println!("RRR {}", t.id);
                 pic.push(t.clone());
                 variants.remove(&t.id);
                 tile = t.clone();
             }
             None => match find_match(left_side.bottom, "top", &variants) {
                 Some(t) => {
-                    println!("DDD {}", t.id);
                     pic.push(t.clone());
                     variants.remove(&t.id);
                     left_side = t;
@@ -280,10 +266,7 @@ pub fn find_pic(variants: &HashMap<usize, Vec<Tile>>) -> Vec<Tile> {
 pub fn glue_tiles(pic: &Vec<Tile>) -> Tile {
     let tiles_per_row = (pic.len() as f64).sqrt() as usize; // per col too
     let tile_dim = pic[0].dim;
-
     let mut image = BitVec::new();
-
-    println!("image size: {}", image.len());
 
     for pic_row in 0..tiles_per_row {
         for tile_row in 0..tile_dim {
@@ -306,6 +289,45 @@ pub fn glue_tiles(pic: &Vec<Tile>) -> Tile {
     }
 }
 
+//                   #
+// #    ##    ##    ###
+//  #  #  #  #  #  #
+
+pub fn delete_monsters(pic: &mut Tile) -> usize {
+    let monster_offsets = [
+        (0, 1),
+        (1, 0),
+        (4, 0),
+        (5, 1),
+        (6, 1),
+        (7, 0),
+        (10, 0),
+        (11, 1),
+        (12, 1),
+        (13, 0),
+        (16, 0),
+        (17, 1),
+        (18, 1),
+        (18, 2),
+        (19, 1),
+    ];
+    let mut num_monsters = 0;
+    for x in 0..pic.dim {
+        for y in 0..pic.dim {
+            if monster_offsets
+                .iter()
+                .all(|(x_o, y_o)| pic.get_bit_safe(x + x_o, y + y_o) == Some(true))
+            {
+                num_monsters += 1;
+                for (x_o, y_o) in &monster_offsets {
+                    pic.set_bit(x + x_o, y + y_o, false);
+                }
+            }
+        }
+    }
+    num_monsters
+}
+
 pub fn solve_b(data: &[String]) -> usize {
     let data = join_lines(&data);
     let tiles: Vec<Tile> = data.iter().map(|s| Tile::new(s)).collect();
@@ -314,15 +336,20 @@ pub fn solve_b(data: &[String]) -> usize {
 
     let mut pic_tiles = find_pic(&tile_variants);
 
-    let mut big_pic = glue_tiles(&pic_tiles);
-
-    println!("{}\n\n", big_pic);
-
     pic_tiles = pic_tiles.iter().map(|tile| tile.shrink()).collect();
 
-    big_pic = glue_tiles(&pic_tiles);
+    let pic = glue_tiles(&pic_tiles);
 
-    println!("{}", big_pic);
+    let pic_variants = compute_variants(&vec![pic.clone()])[&0].clone();
+
+    for mut tile in pic_variants {
+        let num_monsters = delete_monsters(&mut tile);
+        if num_monsters > 0 {
+            let roughness = tile.data.iter().filter(|b| *b).count();
+            println!("monsters: {} roughness: {}", num_monsters, roughness);
+            return roughness;
+        }
+    }
 
     0
 }
