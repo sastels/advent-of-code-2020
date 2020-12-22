@@ -12,6 +12,7 @@ pub fn bits_to_usize(slice: &[bool]) -> usize {
 pub struct Tile {
     pub id: usize,
     pub data: BitVec,
+    pub dim: usize,
     pub top: usize,
     pub bottom: usize,
     pub left: usize,
@@ -24,8 +25,8 @@ impl Tile {
         let re = Regex::new(r"Tile(\d+):(.*)").unwrap();
         let cap = re.captures(&line).unwrap();
         let id = cap[1].parse::<usize>().unwrap();
-
-        let mut data = BitVec::from_elem(100, false);
+        let dim = 10;
+        let mut data = BitVec::from_elem(dim * dim, false);
         for (n, bit) in cap[2].chars().map(|c| c == '#').enumerate() {
             // must be a better way
             data.set(n, bit);
@@ -33,6 +34,7 @@ impl Tile {
         let mut tile = Tile {
             id,
             data,
+            dim,
             top: 0,
             bottom: 0,
             left: 0,
@@ -43,37 +45,38 @@ impl Tile {
     }
 
     pub fn set_signature(&mut self) {
-        let bits: Vec<bool> = (0..10).map(|x| self.get_bit(x, 0)).collect();
+        let bits: Vec<bool> = (0..self.dim).map(|x| self.get_bit(x, 0)).collect();
         self.top = bits_to_usize(&bits);
-        let bits: Vec<bool> = (0..10).map(|x| self.get_bit(x, 9)).collect();
+        let bits: Vec<bool> = (0..self.dim).map(|x| self.get_bit(x, 9)).collect();
         self.bottom = bits_to_usize(&bits);
-        let bits: Vec<bool> = (0..10).map(|y| self.get_bit(0, y)).collect();
+        let bits: Vec<bool> = (0..self.dim).map(|y| self.get_bit(0, y)).collect();
         self.left = bits_to_usize(&bits);
-        let bits: Vec<bool> = (0..10).map(|y| self.get_bit(9, y)).collect();
+        let bits: Vec<bool> = (0..self.dim).map(|y| self.get_bit(9, y)).collect();
         self.right = bits_to_usize(&bits);
     }
 
     pub fn get_bit(&self, x: usize, y: usize) -> bool {
-        self.data[10 * y + x]
+        self.data[self.dim * y + x]
     }
 
     pub fn set_bit(&mut self, x: usize, y: usize, val: bool) {
-        self.data.set(10 * y + x, val);
+        self.data.set(self.dim * y + x, val);
     }
 
     pub fn rotate(&self) -> Self {
-        let data = BitVec::from_elem(100, false);
+        let data = BitVec::from_elem(self.dim * self.dim, false);
 
         let mut tile = Tile {
             id: self.id,
+            dim: self.dim,
             data,
             top: 0,
             bottom: 0,
             left: 0,
             right: 0,
         };
-        for y in 0..10 {
-            for x in 0..10 {
+        for y in 0..self.dim {
+            for x in 0..self.dim {
                 tile.set_bit(9 - y, x, self.get_bit(x, y));
             }
         }
@@ -82,18 +85,19 @@ impl Tile {
     }
 
     pub fn flip(&self) -> Self {
-        let data = BitVec::from_elem(100, false);
+        let data = BitVec::from_elem(self.dim * self.dim, false);
 
         let mut tile = Tile {
             id: self.id,
+            dim: self.dim,
             data,
             top: 0,
             bottom: 0,
             left: 0,
             right: 0,
         };
-        for y in 0..10 {
-            for x in 0..10 {
+        for y in 0..self.dim {
+            for x in 0..self.dim {
                 tile.set_bit(y, x, self.get_bit(x, y));
             }
         }
@@ -110,8 +114,8 @@ impl fmt::Display for Tile {
             self.id, self.top, self.bottom, self.left, self.right
         )?;
 
-        for y in 0..10 {
-            for x in 0..10 {
+        for y in 0..self.dim {
+            for x in 0..self.dim {
                 match self.get_bit(x, y) {
                     true => write!(f, "#")?,
                     false => write!(f, ".")?,
@@ -136,21 +140,6 @@ pub fn find_match(sig: usize, pos: &str, variants: &HashMap<usize, Vec<Tile>>) -
         }
     }
     None
-}
-
-pub fn find_top_corner(tile_variants: &HashMap<usize, Vec<Tile>>) -> Tile {
-    for (id, tiles) in tile_variants {
-        let mut variants = tile_variants.clone();
-        variants.remove(id);
-        for tile in tiles {
-            if find_match(tile.top, "bottom", &variants).is_none()
-                && find_match(tile.left, "right", &variants).is_none()
-            {
-                return tile.clone();
-            }
-        }
-    }
-    panic!()
 }
 
 pub fn solve_a(data: &[String]) -> usize {
@@ -206,12 +195,9 @@ pub fn solve_a(data: &[String]) -> usize {
     corner_prod
 }
 
-pub fn solve_b(data: &[String]) -> usize {
-    let data = join_lines(&data);
-    let tiles: Vec<Tile> = data.iter().map(|s| Tile::new(s)).collect();
+pub fn compute_variants(tiles: &Vec<Tile>) -> HashMap<usize, Vec<Tile>> {
     let mut tile_variants: HashMap<usize, Vec<Tile>> = HashMap::new();
-
-    for tile in &tiles {
+    for tile in tiles {
         let mut variants: Vec<Tile> = vec![];
         variants.push(tile.rotate()); // 0
         variants.push(variants[0].rotate()); // 1
@@ -223,9 +209,68 @@ pub fn solve_b(data: &[String]) -> usize {
         variants.push(variants[6].rotate()); // 7
         tile_variants.insert(tile.id, variants);
     }
+    tile_variants
+}
+
+pub fn find_top_corner(tile_variants: &HashMap<usize, Vec<Tile>>) -> Tile {
+    for (id, tiles) in tile_variants {
+        let mut variants = tile_variants.clone();
+        variants.remove(id);
+        for tile in tiles {
+            if find_match(tile.top, "bottom", &variants).is_none()
+                && find_match(tile.left, "right", &variants).is_none()
+            {
+                return tile.clone();
+            }
+        }
+    }
+    panic!()
+}
+
+pub fn find_pic(variants: &HashMap<usize, Vec<Tile>>) -> Vec<Tile> {
+    let mut left_side = find_top_corner(variants);
+    let mut pic: Vec<Tile> = vec![left_side.clone()];
+
+    let mut tile = left_side.clone();
+    println!("{}", tile.id);
+    let mut variants = variants.clone();
+    variants.remove(&tile.id);
+
+    loop {
+        match find_match(tile.right, "left", &variants) {
+            Some(t) => {
+                println!("{}", t.id);
+                pic.push(t.clone());
+                variants.remove(&t.id);
+                tile = t.clone();
+            }
+            None => match find_match(left_side.bottom, "top", &variants) {
+                Some(t) => {
+                    pic.push(t.clone());
+                    variants.remove(&t.id);
+                    left_side = t;
+                    tile = left_side.clone();
+                }
+                None => break,
+            },
+        }
+    }
+    pic
+}
+
+pub fn solve_b(data: &[String]) -> usize {
+    let data = join_lines(&data);
+    let tiles: Vec<Tile> = data.iter().map(|s| Tile::new(s)).collect();
+
+    let tile_variants = compute_variants(&tiles);
 
     let corner = find_top_corner(&tile_variants);
 
+    let pic = find_pic(&tile_variants);
+
+    for tile in pic {
+        println!("{}", tile);
+    }
     println!("corner: {}", corner);
 
     0
