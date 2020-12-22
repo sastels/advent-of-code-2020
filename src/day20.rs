@@ -239,13 +239,14 @@ pub fn find_pic(variants: &HashMap<usize, Vec<Tile>>) -> Vec<Tile> {
     loop {
         match find_match(tile.right, "left", &variants) {
             Some(t) => {
-                println!("{}", t.id);
+                println!("RRR {}", t.id);
                 pic.push(t.clone());
                 variants.remove(&t.id);
                 tile = t.clone();
             }
             None => match find_match(left_side.bottom, "top", &variants) {
                 Some(t) => {
+                    println!("DDD {}", t.id);
                     pic.push(t.clone());
                     variants.remove(&t.id);
                     left_side = t;
@@ -258,20 +259,46 @@ pub fn find_pic(variants: &HashMap<usize, Vec<Tile>>) -> Vec<Tile> {
     pic
 }
 
+pub fn glue_tiles(pic: &Vec<Tile>) -> Tile {
+    let tiles_per_row = (pic.len() as f64).sqrt() as usize; // per col too
+    let tile_dim = pic[0].dim;
+
+    let mut image = BitVec::new();
+
+    println!("image size: {}", image.len());
+
+    for pic_row in 0..tiles_per_row {
+        for tile_row in 0..tile_dim {
+            for tile in &pic[(pic_row * tiles_per_row)..((pic_row + 1) * tiles_per_row)] {
+                for tile_col in 0..tile.dim {
+                    image.push(tile.get_bit(tile_col, tile_row))
+                }
+            }
+        }
+    }
+
+    Tile {
+        id: 0,
+        dim: (image.len() as f64).sqrt() as usize,
+        data: image,
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+    }
+}
+
 pub fn solve_b(data: &[String]) -> usize {
     let data = join_lines(&data);
     let tiles: Vec<Tile> = data.iter().map(|s| Tile::new(s)).collect();
 
     let tile_variants = compute_variants(&tiles);
 
-    let corner = find_top_corner(&tile_variants);
-
     let pic = find_pic(&tile_variants);
 
-    for tile in pic {
-        println!("{}", tile);
-    }
-    println!("corner: {}", corner);
+    let big_pic = glue_tiles(&pic);
+
+    println!("{}", big_pic);
 
     0
 }
