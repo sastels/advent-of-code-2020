@@ -45,15 +45,11 @@ pub fn solve_a(data: &[String]) -> usize {
     let mut data = join_lines(data);
     let (mut deck1, mut deck2) = deal(&mut data);
 
-    loop {
-        if let Some((card1, card2)) = draw_cards(&mut deck1, &mut deck2) {
-            if card1 > card2 {
-                wins_hand(&mut deck1, card1, card2);
-            } else {
-                wins_hand(&mut deck2, card2, card1);
-            }
+    while let Some((card1, card2)) = draw_cards(&mut deck1, &mut deck2) {
+        if card1 > card2 {
+            wins_hand(&mut deck1, card1, card2);
         } else {
-            break;
+            wins_hand(&mut deck2, card2, card1);
         }
     }
 
@@ -77,9 +73,9 @@ pub fn recursive_combat(round: usize, deck1: &mut Vec<usize>, deck2: &mut Vec<us
             if let Some((card1, card2)) = draw_cards(deck1, deck2) {
                 if deck1.len() >= card1 && deck2.len() >= card2 {
                     let mut rec_deck1: Vec<usize> =
-                        deck1.iter().rev().take(card1).rev().map(|n| *n).collect();
+                        deck1.iter().rev().take(card1).rev().copied().collect();
                     let mut rec_deck2: Vec<usize> =
-                        deck2.iter().rev().take(card2).rev().map(|n| *n).collect();
+                        deck2.iter().rev().take(card2).rev().copied().collect();
                     let winner = recursive_combat(round + 1, &mut rec_deck1, &mut rec_deck2);
                     if winner == 1 {
                         wins_hand(deck1, card1, card2);
