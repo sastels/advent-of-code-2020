@@ -36,7 +36,7 @@ pub fn calc(line: &str) -> usize {
     let mut value = 0;
     let mut operation = "+";
 
-    for element in eqn.split(" ") {
+    for element in eqn.split(' ') {
         match element.parse::<usize>() {
             Err(_) => operation = element,
             Ok(num) => {

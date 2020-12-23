@@ -8,7 +8,7 @@ pub struct Rule {
 }
 
 pub fn parse_range(s: &str) -> RangeInclusive<usize> {
-    let parts: Vec<usize> = s.split("-").map(|s| s.parse().unwrap()).collect();
+    let parts: Vec<usize> = s.split('-').map(|s| s.parse().unwrap()).collect();
     parts[0]..=parts[1]
 }
 
@@ -53,10 +53,10 @@ impl Input {
                 match parsing_now {
                     "rules" => rules.push(Rule::new(line)),
                     "your ticket" => {
-                        my_ticket = line.split(",").map(|s| s.parse().unwrap()).collect()
+                        my_ticket = line.split(',').map(|s| s.parse().unwrap()).collect()
                     }
                     "nearby tickets" => {
-                        nearby_tickets.push(line.split(",").map(|s| s.parse().unwrap()).collect())
+                        nearby_tickets.push(line.split(',').map(|s| s.parse().unwrap()).collect())
                     }
                     _ => panic!(),
                 }
