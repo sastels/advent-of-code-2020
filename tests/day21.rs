@@ -28,8 +28,7 @@ fn a() {
 }
 
 #[test]
-#[ignore]
 fn b() {
     let data = read_lines("./data/day21_test.txt");
-    assert_eq!(solve_b(&data), 0);
+    assert_eq!(solve_b(&data), "mxmxvkd,sqjhc,fvjkl");
 }
