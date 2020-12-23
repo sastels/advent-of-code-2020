@@ -152,7 +152,7 @@ impl fmt::Display for Tile {
 }
 
 pub fn find_match(sig: usize, pos: &str, variants: &HashMap<usize, Vec<Tile>>) -> Option<Tile> {
-    for (_, tiles) in variants {
+    for tiles in variants.values() {
         for tile in tiles {
             if (pos == "top" && sig == tile.top)
                 || (pos == "bottom" && sig == tile.bottom)
@@ -201,7 +201,7 @@ pub fn solve_a(data: &[String]) -> usize {
     corner_prod
 }
 
-pub fn compute_variants(tiles: &Vec<Tile>) -> HashMap<usize, Vec<Tile>> {
+pub fn compute_variants(tiles: &[Tile]) -> HashMap<usize, Vec<Tile>> {
     let mut tile_variants: HashMap<usize, Vec<Tile>> = HashMap::new();
     for tile in tiles {
         let mut variants: Vec<Tile> = vec![];
@@ -263,7 +263,7 @@ pub fn find_pic(variants: &HashMap<usize, Vec<Tile>>) -> Vec<Tile> {
     pic
 }
 
-pub fn glue_tiles(pic: &Vec<Tile>) -> Tile {
+pub fn glue_tiles(pic: &[Tile]) -> Tile {
     let tiles_per_row = (pic.len() as f64).sqrt() as usize; // per col too
     let tile_dim = pic[0].dim;
     let mut image = BitVec::new();
@@ -340,7 +340,7 @@ pub fn solve_b(data: &[String]) -> usize {
 
     let pic = glue_tiles(&pic_tiles);
 
-    let pic_variants = compute_variants(&vec![pic.clone()])[&0].clone();
+    let pic_variants = compute_variants(&[pic])[&0].clone();
 
     for mut tile in pic_variants {
         let num_monsters = delete_monsters(&mut tile);

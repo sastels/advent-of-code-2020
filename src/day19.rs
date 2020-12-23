@@ -38,8 +38,8 @@ impl Rule {
         let lhs = split.next().unwrap().to_string();
         let mut rhs = "".to_string();
         let rhs_str = split.next();
-        if rhs_str.is_some() {
-            rhs = rhs_str.unwrap().to_string();
+        if let Some(rhs_str) = rhs_str {
+            rhs = rhs_str.to_string();
         }
         Rule { id, lhs, rhs }
     }
@@ -94,15 +94,14 @@ pub fn matches(message: &str, rule: &str, rules: &HashMap<String, Rule>) -> bool
 
     // have a number we need to replace
     let rule_id = rule
-        .split(" ")
-        .filter(|s| !s.is_empty() && *s != "a" && *s != "b")
-        .next()
+        .split(' ')
+        .find(|s| !s.is_empty() && *s != "a" && *s != "b")
         .unwrap();
     let sub_rule = &rules[rule_id];
     if sub_rule.rhs.is_empty() {
         let mut replaced = false;
         let rule = rule
-            .split(" ")
+            .split(' ')
             .map(|s| {
                 if s == rule_id && !replaced {
                     replaced = true;
@@ -117,7 +116,7 @@ pub fn matches(message: &str, rule: &str, rules: &HashMap<String, Rule>) -> bool
     } else {
         let mut replaced = false;
         let rule1 = rule
-            .split(" ")
+            .split(' ')
             .map(|s| {
                 if s == rule_id && !replaced {
                     replaced = true;
@@ -129,7 +128,7 @@ pub fn matches(message: &str, rule: &str, rules: &HashMap<String, Rule>) -> bool
             .join(" ");
         replaced = false;
         let rule2 = rule
-            .split(" ")
+            .split(' ')
             .map(|s| {
                 if s == rule_id && !replaced {
                     replaced = true;

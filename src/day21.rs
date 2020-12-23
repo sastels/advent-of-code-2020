@@ -17,20 +17,20 @@ impl Food {
             ingredients: parts
                 .next()
                 .unwrap()
-                .split(" ")
+                .split(' ')
                 .map(|s| s.to_string())
                 .collect(),
             allergens: parts
                 .next()
                 .unwrap()
-                .split(" ")
+                .split(' ')
                 .map(|s| s.to_string())
                 .collect(),
         }
     }
 }
 
-pub fn find_all_allergens(foods: &Vec<Food>) -> HashSet<String> {
+pub fn find_all_allergens(foods: &[Food]) -> HashSet<String> {
     let all_allergens: HashSet<String> =
         foods
             .iter()
@@ -43,7 +43,7 @@ pub fn find_all_allergens(foods: &Vec<Food>) -> HashSet<String> {
     all_allergens
 }
 
-pub fn find_all_ingredients(foods: &Vec<Food>) -> HashSet<String> {
+pub fn find_all_ingredients(foods: &[Food]) -> HashSet<String> {
     let all_ingredients: HashSet<String> =
         foods
             .iter()
@@ -56,7 +56,7 @@ pub fn find_all_ingredients(foods: &Vec<Food>) -> HashSet<String> {
     all_ingredients
 }
 
-pub fn find_possible_matches(foods: &Vec<Food>) -> HashMap<String, HashSet<String>> {
+pub fn find_possible_matches(foods: &[Food]) -> HashMap<String, HashSet<String>> {
     let all_allergens = find_all_allergens(&foods);
     let all_ingredients = find_all_ingredients(&foods);
     let mut possible_ingredients: HashMap<String, HashSet<String>> = HashMap::new();
@@ -124,8 +124,7 @@ pub fn solve_b(data: &[String]) -> String {
 
         for allergen in &all_allergens {
             let matching_ingredient = single_ingredient(&matches.get(allergen).unwrap());
-            if matching_ingredient.is_some() {
-                let ingredient = matching_ingredient.unwrap();
+            if let Some(ingredient) = matching_ingredient {
                 pairs.push((allergen.clone(), ingredient.clone()));
                 for a in &all_allergens {
                     if matches.get_mut(a).unwrap().contains(&ingredient) {

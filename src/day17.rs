@@ -99,7 +99,7 @@ impl Conway {
             }
         }
         if self.cube_is_set(x, y, z, w) {
-            num_set = num_set - 1;
+            num_set -= 1;
         }
         num_set
     }
