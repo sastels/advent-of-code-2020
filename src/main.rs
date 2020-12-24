@@ -137,23 +137,22 @@ fn main() {
         }
         "21" => {
             let data = read_lines("./data/day21.txt");
-            println!("Day 20 A: {}", day21::solve_a(&data));
-            println!("Day 20 B: {}", day21::solve_b(&data));
+            println!("Day 21 A: {}", day21::solve_a(&data));
+            println!("Day 21 B: {}", day21::solve_b(&data));
         }
         "22" => {
             let data = read_lines("./data/day22.txt");
-            println!("Day 20 A: {}", day22::solve_a(&data));
-            println!("Day 20 B: {}", day22::solve_b(&data));
+            println!("Day 22 A: {}", day22::solve_a(&data));
+            println!("Day 22 B: {}", day22::solve_b(&data));
         }
         "23" => {
-            let data = read_lines("./data/day23.txt");
-            println!("Day 20 A: {}", day23::solve_a(&data));
-            println!("Day 20 B: {}", day23::solve_b(&data));
+            println!("Day 23 A: {}", day23::solve_a("589174263"));
+            println!("Day 23 B: {}", day23::solve_b("589174263"));
         }
         "24" => {
             let data = read_lines("./data/day24.txt");
-            println!("Day 20 A: {}", day24::solve_a(&data));
-            println!("Day 20 B: {}", day24::solve_b(&data));
+            println!("Day 24 A: {}", day24::solve_a(&data));
+            println!("Day 24 B: {}", day24::solve_b(&data));
         }
         _ => panic!("usage: cargo run n for n in 1..=24"),
     }
