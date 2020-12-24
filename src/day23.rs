@@ -1,12 +1,13 @@
-use itertools::Itertools;
+use std::collections::HashMap;
 use std::fmt;
 
 #[derive(Debug, Clone)]
 pub struct Game {
+    next_cup: HashMap<usize, usize>,
+    prev_cup: HashMap<usize, usize>,
     all_cups: Vec<usize>,
-    cups: Vec<usize>,
-    current_index: usize,
-    dest_index: usize,
+    current: usize,
+    destination: usize,
     picked_up: Vec<usize>,
 }
 
@@ -14,137 +15,117 @@ const MAX_CUP: usize = 1000000;
 
 impl fmt::Display for Game {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "cups: ")?;
-        for (n, cup) in self.cups.iter().enumerate() {
-            if n == self.current_index {
-                write!(f, "({}) ", cup)?;
-            } else {
-                write!(f, "{} ", cup)?;
-            }
+        write!(f, "cups: ({}) ", self.current)?;
+        let mut cup = self.next_cup[&self.current];
+        while cup != self.current {
+            write!(f, "{} ", cup)?;
+            cup = self.next_cup[&cup];
         }
         writeln!(f, "\npick up: ")?;
         for cup in &self.picked_up {
             write!(f, "{} ", cup)?;
         }
-        writeln!(f, "\ndestination: {}", self.cups[self.dest_index])?;
+        writeln!(f, "\ndestination: {}", self.destination)?;
         Ok(())
     }
 }
 
 impl Game {
     pub fn new(data: &str) -> Self {
-        let cups: Vec<usize> = data
+        let all_cups: Vec<usize> = data
             .chars()
             .map(|c| c.to_string().parse().unwrap())
             .collect();
+        let current = all_cups[0];
+        let mut next_cup: HashMap<usize, usize> = HashMap::new();
+        let mut prev_cup: HashMap<usize, usize> = HashMap::new();
+
+        for n in 0..all_cups.len() - 1 {
+            next_cup.insert(all_cups[n], all_cups[n + 1]);
+        }
+        next_cup.insert(all_cups[all_cups.len() - 1], current);
+        for n in 1..all_cups.len() {
+            prev_cup.insert(all_cups[n], all_cups[n - 1]);
+        }
+        prev_cup.insert(current, all_cups[all_cups.len() - 1]);
+
         Game {
-            all_cups: cups.clone(),
-            cups,
-            current_index: 0,
-            dest_index: 0,
+            all_cups,
+            current,
+            destination: 0,
+            next_cup,
+            prev_cup,
             picked_up: vec![],
         }
     }
 
+    pub fn insert_after(&mut self, cup: usize, new_cup: usize) {
+        let after_cup = self.next_cup[&cup];
+        self.next_cup.insert(new_cup, after_cup);
+        self.prev_cup.insert(new_cup, cup);
+        self.next_cup.insert(cup, new_cup);
+        self.prev_cup.insert(after_cup, new_cup);
+    }
+
+    pub fn remove_after(&mut self, cup: usize) -> usize {
+        let after_cup = self.next_cup[&cup];
+        let after_after_cup = self.next_cup[&after_cup];
+        self.next_cup.insert(cup, after_after_cup);
+        self.prev_cup.insert(after_after_cup, cup);
+        self.next_cup.remove(&after_cup);
+        self.prev_cup.remove(&after_cup);
+        after_cup
+    }
+
     pub fn pick_up_cups(&mut self) {
-        self.picked_up = [
-            self.current_index + 1,
-            self.current_index + 1,
-            self.current_index + 1,
-        ]
-        .iter()
-        .map(|&index| {
-            if index < self.cups.len() {
-                self.cups.remove(index)
-            } else {
-                self.current_index -= 1;
-                self.cups.remove(0)
-            }
-        })
-        .collect();
+        let cup = self.current;
+        self.picked_up = (0..3).map(|_| self.remove_after(cup)).collect();
     }
 
     pub fn set_destination(&mut self) {
-        let mut destination_value = self.cups[self.current_index] - 1;
-        loop {
-            if let Some((dest_index, _)) = self
-                .cups
-                .iter()
-                .enumerate()
-                .find(|(_, &c)| c == destination_value)
-            {
-                self.dest_index = dest_index;
-                break;
+        let mut destination = self.current - 1;
+        while self.next_cup.get(&destination).is_none() {
+            if destination == 0 {
+                destination = *self.all_cups.iter().max().unwrap();
             } else {
-                if destination_value > *self.all_cups.iter().min().unwrap() {
-                    destination_value -= 1;
-                } else {
-                    destination_value = *self.all_cups.iter().max().unwrap();
-                }
+                destination -= 1;
             }
         }
+        self.destination = destination;
     }
 
     pub fn put_down_cups(&mut self) {
-        if self.dest_index < self.current_index {
-            self.current_index += self.picked_up.len();
+        let picked_up = self.picked_up.clone();
+        for cup in picked_up.iter().rev() {
+            self.insert_after(self.destination, *cup);
         }
-        for cup in self.picked_up.iter().rev() {
-            self.cups.insert(self.dest_index + 1, *cup);
-        }
-        // self.picked_up = vec![];
     }
 
     pub fn set_current(&mut self) {
-        self.current_index += 1;
-        if self.current_index >= self.cups.len() {
-            self.current_index = 0;
-        }
+        self.current = self.next_cup[&self.current];
     }
 
     pub fn get_order(&self) -> String {
-        let index_1 = self
-            .cups
-            .iter()
-            .enumerate()
-            .find(|(_, &c)| c == 1)
-            .unwrap()
-            .0;
-
-        let order_start: String = self.cups[index_1 + 1..]
-            .iter()
-            .map(|x| format!("{}", *x))
-            .join("");
-
-        let order_end: String = self.cups[..index_1]
-            .iter()
-            .map(|x| format!("{}", *x))
-            .join("");
-
-        format!("{}{}", order_start, order_end)
+        let mut order = "".to_string();
+        let mut cup = self.next_cup[&1];
+        while cup != 1 {
+            order = format!("{}{}", order, cup);
+            cup = self.next_cup[&cup];
+        }
+        order
     }
 
     pub fn extend_cups(&mut self) {
-        self.cups
-            .extend((self.cups.iter().max().unwrap() + 1)..=MAX_CUP);
+        let mut last_cup = self.prev_cup[&self.current];
+        for cup in (self.all_cups.iter().max().unwrap() + 1)..=MAX_CUP {
+            self.insert_after(last_cup, cup);
+            last_cup = cup;
+        }
     }
 
     pub fn solve_b(&self) -> usize {
-        let index_1 = self
-            .cups
-            .iter()
-            .enumerate()
-            .find(|(_, &c)| c == 1)
-            .unwrap()
-            .0;
-
-        if index_1 == self.cups.len() - 1 {
-            self.cups[0] * self.cups[1]
-        } else if index_1 == self.cups.len() - 2 {
-            self.cups[index_1 + 1] * self.cups[0]
-        } else {
-            self.cups[index_1 + 1] * self.cups[index_1 + 2]
-        }
+        let after_1 = self.next_cup[&1];
+        after_1 * self.next_cup[&after_1]
     }
 }
 
@@ -168,7 +149,7 @@ pub fn solve_b(data: &str) -> usize {
 
     game.extend_cups();
 
-    for _ in 0..100000 {
+    for _ in 0..5 {
         game.pick_up_cups();
         game.set_destination();
         game.put_down_cups();
