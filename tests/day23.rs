@@ -6,7 +6,7 @@ fn a() {
 }
 
 #[test]
-#[ignore]
+#[ignore] // takes 4 min
 fn b() {
     assert_eq!(solve_b("389125467"), 149245887792);
 }

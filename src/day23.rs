@@ -17,9 +17,11 @@ impl fmt::Display for Game {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "cups: ({}) ", self.current)?;
         let mut cup = self.next_cup[&self.current];
-        while cup != self.current {
+        let mut n = 1;
+        while n < 10 && cup != self.current {
             write!(f, "{} ", cup)?;
             cup = self.next_cup[&cup];
+            n += 1;
         }
         writeln!(f, "\npick up: ")?;
         for cup in &self.picked_up {
@@ -105,7 +107,7 @@ impl Game {
         self.current = self.next_cup[&self.current];
     }
 
-    pub fn get_order(&self) -> String {
+    pub fn solve_a(&self) -> String {
         let mut order = "".to_string();
         let mut cup = self.next_cup[&1];
         while cup != 1 {
@@ -119,37 +121,42 @@ impl Game {
         let mut last_cup = self.prev_cup[&self.current];
         for cup in (self.all_cups.iter().max().unwrap() + 1)..=MAX_CUP {
             self.insert_after(last_cup, cup);
+            self.all_cups.push(cup);
             last_cup = cup;
         }
     }
 
     pub fn solve_b(&self) -> usize {
         let after_1 = self.next_cup[&1];
-        after_1 * self.next_cup[&after_1]
+        let after_after_1 = self.next_cup[&after_1];
+        println!("1 -> {} -> {}", after_1, after_after_1);
+
+        println!(
+            "{} -> 934001 -> {}",
+            self.prev_cup[&934001], self.next_cup[&934001]
+        );
+
+        after_1 * after_after_1
     }
 }
 
 pub fn solve_a(data: &str) -> String {
     let mut game = Game::new(data);
 
-    println!("{}", game);
-
     for _ in 0..100 {
         game.pick_up_cups();
         game.set_destination();
         game.put_down_cups();
-        // println!("-- move {} --\n{}", i + 1, game);
         game.set_current();
     }
-    game.get_order()
+    game.solve_a()
 }
 
 pub fn solve_b(data: &str) -> usize {
     let mut game = Game::new(data);
-
     game.extend_cups();
 
-    for _ in 0..5 {
+    for _ in 0..10000000 {
         game.pick_up_cups();
         game.set_destination();
         game.put_down_cups();
@@ -157,6 +164,3 @@ pub fn solve_b(data: &str) -> usize {
     }
     game.solve_b()
 }
-
-// 10K 23.03s
-// 100K 3.8m
