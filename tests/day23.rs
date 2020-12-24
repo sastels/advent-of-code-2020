@@ -1,16 +1,12 @@
 use advent_2020::day23::{solve_a, solve_b};
-use advent_2020::utils::read_lines;
 
 #[test]
-#[ignore]
 fn a() {
-    let data = read_lines("./data/day23_test.txt");
-    assert_eq!(solve_a(&data), 0);
+    assert_eq!(solve_a("389125467"), "67384529");
 }
 
 #[test]
 #[ignore]
 fn b() {
-    let data = read_lines("./data/day23_test.txt");
-    assert_eq!(solve_b(&data), 0);
+    assert_eq!(solve_b("389125467"), 0);
 }

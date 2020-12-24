@@ -146,9 +146,8 @@ fn main() {
             println!("Day 20 B: {}", day22::solve_b(&data));
         }
         "23" => {
-            let data = read_lines("./data/day23.txt");
-            println!("Day 20 A: {}", day23::solve_a(&data));
-            println!("Day 20 B: {}", day23::solve_b(&data));
+            println!("Day 20 A: {}", day23::solve_a("589174263"));
+            println!("Day 20 B: {}", day23::solve_b("589174263"));
         }
         "24" => {
             let data = read_lines("./data/day24.txt");
