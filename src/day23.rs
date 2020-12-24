@@ -10,6 +10,8 @@ pub struct Game {
     picked_up: Vec<usize>,
 }
 
+const MAX_CUP: usize = 1000000;
+
 impl fmt::Display for Game {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "cups: ")?;
@@ -121,6 +123,29 @@ impl Game {
 
         format!("{}{}", order_start, order_end)
     }
+
+    pub fn extend_cups(&mut self) {
+        self.cups
+            .extend((self.cups.iter().max().unwrap() + 1)..=MAX_CUP);
+    }
+
+    pub fn solve_b(&self) -> usize {
+        let index_1 = self
+            .cups
+            .iter()
+            .enumerate()
+            .find(|(_, &c)| c == 1)
+            .unwrap()
+            .0;
+
+        if index_1 == self.cups.len() - 1 {
+            self.cups[0] * self.cups[1]
+        } else if index_1 == self.cups.len() - 2 {
+            self.cups[index_1 + 1] * self.cups[0]
+        } else {
+            self.cups[index_1 + 1] * self.cups[index_1 + 2]
+        }
+    }
 }
 
 pub fn solve_a(data: &str) -> String {
@@ -128,16 +153,29 @@ pub fn solve_a(data: &str) -> String {
 
     println!("{}", game);
 
-    for i in 0..100 {
+    for _ in 0..100 {
         game.pick_up_cups();
         game.set_destination();
         game.put_down_cups();
-        println!("-- move {} --\n{}", i + 1, game);
+        // println!("-- move {} --\n{}", i + 1, game);
         game.set_current();
     }
     game.get_order()
 }
 
-pub fn solve_b(_data: &str) -> usize {
-    unimplemented!()
+pub fn solve_b(data: &str) -> usize {
+    let mut game = Game::new(data);
+
+    game.extend_cups();
+
+    for _ in 0..100000 {
+        game.pick_up_cups();
+        game.set_destination();
+        game.put_down_cups();
+        game.set_current();
+    }
+    game.solve_b()
 }
+
+// 10K 23.03s
+// 100K 3.8m

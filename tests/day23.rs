@@ -6,7 +6,6 @@ fn a() {
 }
 
 #[test]
-#[ignore]
 fn b() {
-    assert_eq!(solve_b("389125467"), 0);
+    assert_eq!(solve_b("389125467"), 149245887792);
 }
