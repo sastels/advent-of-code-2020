@@ -16,19 +16,13 @@ fn utils_join_lines() {
 }
 
 #[test]
-fn create_grid() {
-    let grid = Grid::<i32>::new(3, 2, -1);
-    assert_eq!(grid.data[4], -1);
-    assert_eq!(grid.data.len(), 6);
-    assert_eq!(grid.width, 3);
-    assert_eq!(grid.height, 2);
-}
-
-#[test]
 fn get_set_grid() {
-    let mut grid = Grid::<i32>::new(3, 2, -1);
+    let mut grid = Grid::<i32>::new(10, -1);
+    assert_eq!(grid.count_equals(-1), 100);
+    assert_eq!(grid.count_equals(15), 0);
     assert_eq!(*grid.get(2, 1), -1);
     grid.set(2, 1, 15);
+    assert_eq!(grid.count_equals(15), 1);
+
     assert_eq!(*grid.get(2, 1), 15);
-    assert_eq!(grid.data[5], 15);
 }

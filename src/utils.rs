@@ -3,33 +3,33 @@ use std::io::{self, BufRead};
 use std::path::Path;
 
 pub struct Grid<T> {
-    pub width: usize,
-    pub height: usize,
-    pub data: Vec<T>,
+    pub size: usize,
+    pub offset: i32,
+    data: Vec<T>,
 }
 
-impl<T: Clone> Grid<T> {
-    pub fn new(width: usize, height: usize, fill: T) -> Self {
-        let data = vec![fill; width * height];
+impl<T: Clone + PartialEq> Grid<T> {
+    pub fn new(size: usize, fill: T) -> Self {
+        let data = vec![fill; size * size];
         Grid {
-            width,
-            height,
+            size,
+            offset: 0,
             data,
         }
     }
 
-    pub fn get(&self, x: usize, y: usize) -> &T {
-        if x >= self.width || y >= self.height {
-            panic!("x or y too big")
-        }
-        &(self.data[y * self.width + x])
+    pub fn get(&self, x: i32, y: i32) -> &T {
+        let loc: usize = ((y + self.offset) * self.size as i32 + (x + self.offset)) as usize;
+        &(self.data[loc])
     }
 
-    pub fn set(&mut self, x: usize, y: usize, value: T) {
-        if x >= self.width || y >= self.height {
-            panic!("x or y too big")
-        }
-        self.data[y * self.width + x] = value;
+    pub fn set(&mut self, x: i32, y: i32, value: T) {
+        let loc: usize = ((y + self.offset) * self.size as i32 + (x + self.offset)) as usize;
+        self.data[loc] = value;
+    }
+
+    pub fn count_equals(&self, value: T) -> usize {
+        self.data.iter().filter(|&x| *x == value).count()
     }
 }
 
