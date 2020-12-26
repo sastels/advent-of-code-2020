@@ -15,6 +15,7 @@ use advent_2020::day21;
 use advent_2020::day22;
 use advent_2020::day23;
 use advent_2020::day24;
+use advent_2020::day25;
 use advent_2020::day3;
 use advent_2020::day4;
 use advent_2020::day5;
@@ -154,6 +155,12 @@ fn main() {
             println!("Day 24 A: {}", day24::solve_a(&data));
             println!("Day 24 B: {}", day24::solve_b(&data));
         }
+        "25" => {
+            let data = read_lines("./data/day25.txt");
+            println!("Day 25 A: {}", day25::solve_a(&data));
+            println!("Day 25 B: {}", day25::solve_b(&data));
+        }
+
         _ => panic!("usage: cargo run n for n in 1..=24"),
     }
 }
