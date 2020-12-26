@@ -1,9 +1,12 @@
+use std::cmp::max;
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
 
+#[derive(Clone)]
 pub struct Grid<T> {
     pub size: usize,
+    pub max_xy: i32,
     pub offset: i32,
     data: Vec<T>,
 }
@@ -14,6 +17,7 @@ impl<T: Clone + PartialEq> Grid<T> {
         Grid {
             size,
             offset: 0,
+            max_xy: 0,
             data,
         }
     }
@@ -25,6 +29,7 @@ impl<T: Clone + PartialEq> Grid<T> {
 
     pub fn set(&mut self, x: i32, y: i32, value: T) {
         let loc: usize = ((y + self.offset) * self.size as i32 + (x + self.offset)) as usize;
+        self.max_xy = max(self.max_xy, max(x.abs(), y.abs()));
         self.data[loc] = value;
     }
 
